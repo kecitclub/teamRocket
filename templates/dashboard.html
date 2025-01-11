@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheating Detection Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        
+        /* Disable text selection for the entire page */
+        body {
+            user-select: none; /* Prevent text selection */
+        }
+        input, textarea, select {
+            user-select: none; /* Prevent text selection inside inputs */
+        }
+        
+        /* Style for the fullscreen button */
+        .fullscreen-button {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            font-size: 18px;
+            background-color: #201F41; /* Stylish green color */
+            color: #fff; /* White text */
+            border: none; /* Remove default border */
+            border-radius: 12px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
+            z-index: 1000; /* Ensure it appears above other elements */
+            display: none; /* Initially hidden */
+        }
+
+        /* Apply blur to the background */
+        #content.blur {
+            filter: blur(10px); /* Blurs the content */
+        }
+
+        /* Overlay to block interaction */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            z-index: 1000; /* Ensure it appears above other elements */
+        }
+
+        /* Style for the warning screen */
+        .warning-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000; /* Solid black background */
+            display: none; /* Initially hidden */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Ensure it appears above other elements */
+        }
+
+        .warning-sign {
+            font-size: 50px;
+            color: #8B0000;
+            background-color: black;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+        }
+        
+        /* Style for redirect button */
+        .redirect-link {
+            display: inline-block; /* Make it behave like a button */
+            margin-top: 20px;
+            padding: 10px 20px; /* Add some padding for better touch interaction */
+            font-size: 18px;
+            color: #fff;
+            background-color: #009688; /* Match the stylish green color used elsewhere */
+            border: none; /* Remove default button borders */
+            border-radius: 8px; /* Smooth, rounded corners */
+            text-decoration: none; /* Remove underline from link-style text */
+            cursor: pointer; /* Change cursor to pointer on hover */
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Add smooth hover transitions */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add subtle shadow for depth */
+        }
+
+        .redirect-link:hover {
+            background-color: #00796b; /* Darken the green on hover */
+            transform: translateY(-2px); /* Slight lift effect */
+        }
+
+        .redirect-link:active {
+            background-color: #004d40; /* Darker green on active press */
+            transform: translateY(0); /* Remove lift effect */
+        }
+
+        /* Blur effect for questions */
+        .questions-blur {
+            filter: blur(10px); /* Initial blur effect */
+        }
+
+        /* Block interaction with content */
+        .interaction-block {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0); /* Transparent background */
+            z-index: 1000; /* Ensure it appears above other elements */
+            pointer-events: auto; /* Allow interaction blocking */
+        }
+
+        #timeRemaining {
+            position: fixed;
+            top: 350px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .rules-box {
+            border: 2px solid #009688; /* Border color and thickness */
+            border-radius: 8px; /* Rounded corners */
+            padding: 20px; /* Spacing inside the box */
+            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */       
+            max-width: 600px; /* Maximum width of the box */
+            margin: 0 auto; /* Center the box on the page */
+        }
+        
+        .rules-content {
+            text-align: left; /* Align text to the left */
+            color: white; /* Text color */
+            font-size: 20px; /* Increased font size for rules text */
+        }
+        
+        .rules-heading {
+            color: #009688; /* Change this to your desired color */
+            font-size: 40px; /* Increased font size for the heading */
+            font-weight: bold; /* Make it bold */
+            text-align: center; /* Center align the heading */
+            margin: 10px 0; /* Reduced spacing above and below the heading */
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: center; /* Align buttons to the right */
+            margin-top: 10px; /* Add spacing above buttons */
+        }
+        
+        .form-button {
+            padding: 10px 20px;
+            margin-left: 10px; /* Add some space between the buttons */
+            font-size: 18px;
+            background-color: #009688; /* Matching button color */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .form-button:hover {
+            background-color: #00796b;
+        }
+        
+        .form-button:active {
+            background-color: #004d40;
+            transform: translateY(2px);
+        }    
+        /* .selection-box {
+        border: 2px solid #009688;
+        border-radius: 8px;
+        padding: 40px;
+        background-color: rgba(0, 0, 0, 0.7);
+        max-width: 800px;
+        margin: 0 auto;
+        }
+
+        .selection-heading {
+            color: #009688;
+            font-size: 40px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+        } */
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .selection-button {
+            padding: 20px;
+            font-size: 24px;
+            background-color: #009688;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .selection-button:hover {
+            background-color: #00796b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .selection-button:active {
+            transform: translateY(0);
+        }
+
+        .custom-form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            border: 2px solid #009688;
+            color: white;
+        }
+
+        /* Update quiz header */
+        #quiz-header {
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+            padding: 10px 0;
+        }
+
+        #quiz-progress {
+            color: #666666;
+        }
+
+        #question-container {
+            margin: 20px 0;
+        }
+
+        #question-text {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: black;
+        }
+
+        #options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Update the options styling */
+        .option {
+            padding: 15px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #333;
+        }
+
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background-color: #e8e8e8;
+            border-color: #cccccc;
+            color: #333;
+        }
+
+        #navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        /* Update navigation buttons */
+        .nav-button {
+            padding: 10px 20px;
+            background-color: #666666;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background-color: #555555;
+        }
+
+        .nav-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        /* Updated styles for better layout */
+        .header {
+            background-color: #201F41;
+            padding: 10px;
+            /* margin-bottom: 30px; */
+            /* height: 70px; */
+            border-bottom: 2px solid #009688;   
+        }
+
+        .header img {
+            width: 150px;
+            height: auto;
+        }
+        /* .header h1 {
+            margin: 0;
+            color: #009688;
+            font-size: 32px;
+            text-align: center;
+        } */
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 300px; /* Main content and video feed */
+            gap: 20px;
+            padding: 0 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: calc(100vh - 100px);
+            /* border: 2px red solid; */
+        }
+
+        /* Update the question list container */
+        .question-list {
+            padding-right: 320px; /* Add padding to prevent overlap with video feed */
+            width: 100%;
+            margin-top: 30%;
+        }
+
+        /* Update the custom form container */
+        .custom-form-container {
+            background-color: #f5f5f5; /* Light neutral background */
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            width: 200%;
+            margin-bottom: 20px;
+            height: auto;
+        }
+
+        /* Update the quiz container styles */
+        #quiz-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        /* Add these updated video container styles */
+        .video-container {
+            position: fixed; /* Change from sticky to fixed */
+            right: 20px;
+            width: 400px; /* Explicit width */
+            z-index: 100; /* Ensure it stays above other content */
+            /* border: 2px red solid; */
+        }
+
+        #toggleButton{
+            background-color: #201F41;
+        }
+
+        #videoFeed {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        /* Update the question container */
+        #question-container {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        /* Navigation buttons positioning */
+        #navigation-buttons {
+            margin-top: auto;
+            padding: 20px 0;
+            border-top: 1px solid rgba(0, 150, 136, 0.3);
+        }
+
+        .selection-box {
+            border: 2px solid #009688;
+            border-radius: 8px;
+            padding: 40px;
+            background-color: rgba(0, 0, 0, 0.7);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .selection-heading {
+            color: #009688;
+            font-size: 40px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* New styles for dropdown grid */
+        .dropdown-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .dropdown-select {
+            padding: 15px;
+            font-size: 18px;
+            background-color: #009688;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: center;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+
+        .dropdown-select:hover {
+            background-color: #00796b;
+        }
+
+        .dropdown-select option {
+            background-color: #ffffff;
+            color: #333333;
+        }
+
+        .proceed-button {
+            padding: 15px;
+            font-size: 18px;
+            background-color: #009688;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .proceed-button:hover {
+            background-color: #00796b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    </style>
+</head>
+<body>
+    <div id="buttonSelectionScreen" class="warning-screen" style="display: flex;">
+        <div class="selection-box">
+            <h2 class="selection-heading">Choose Exam</h2>
+            <div class="dropdown-grid">
+                <select class="dropdown-select" id="courseSelect">
+                    <option value="" disabled selected>Select Course</option>
+                    <option value="course1">AI</option>
+                    <option value="course2">Python</option>
+                    <option value="course3">Cyber Security</option>
+                </select>
+
+                <select class="dropdown-select" id="typeSelect">
+                    <option value="" disabled selected>Select Type</option>
+                    <option value="type1">Finals</option>
+                    <option value="type2">Mid-Term</option>
+                    <option value="type3">Quiz</option>
+                </select>
+
+                <select class="dropdown-select" id="yearSelect">
+                    <option value="" disabled selected>Semester</option>
+                    <option value="2024">1</option>
+                    <option value="2023">2</option>
+                    <option value="2022">3</option>
+                </select>
+
+                <button class="proceed-button" id="proceedButton">Proceed</button>
+            </div>
+        </div>
+    </div>
+    <div id="content" class="dashboard blur">
+        <div class="header">
+            <img src="../static/images/logob.svg" alt="Header Image">
+        </div>
+        
+        <div class="content questions-blur">
+            <div class="interaction-block" id="interactionBlock"></div>
+            <div class="question-list">
+                <div class="custom-form-container">
+                    <div id="quiz-container">
+                        <div id="quiz-header">
+                            <div id="quiz-progress"></div>
+                            <div id="time-left"></div>
+                        </div>
+                        <div id="question-container">
+                            <h3 id="question-text"></h3>
+                            <div id="options-container"></div>
+                        </div>
+                        <div id="navigation-buttons">
+                            <button id="prev-button" class="nav-button">Previous</button>
+                            <button id="next-button" class="nav-button">Next</button>
+                            <button id="submit-button" class="nav-button" style="display: none;">Submit Quiz</button>
+                        </div>
+                    </div>
+                </div>               
+                <!-- New Buttons -->
+            </div>
+        </div>
+        <div class="video-container">
+            <button id="toggleButton">Start Video Feed</button>
+            <img id="videoFeed" style="display: none;" alt="Video Feed">
+            <div id="timeRemaining" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Rules Screen -->
+    <div id="rulesScreen" class="warning-screen" style="display: flex;">
+        <div class="rules-box">
+            <div class="rules-content">
+                <h2 class="rules-heading">Rules and Regulations</h2>
+                <p>1. No cheating allowed.</p>
+                <p>2. Follow all instructions carefully.</p>
+                <p>3. Keep your camera on at all times.</p>
+                <p>4. Report any technical issues immediately.</p>
+                <button class="redirect-link" id="startButton">Enter the Exam</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay to block interactions -->
+    <div id="overlay" class="overlay" style="display: none;"></div>
+
+    <!-- Warning Screen -->
+    <div id="warningScreen" class="warning-screen">
+        <div class="warning-sign">WARNING</div>
+        <!-- <button class="redirect-link" onclick="window.location.href='login'">Go to Login</button> -->
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Quiz Manager Class
+    class QuizManager {
+        constructor(questions) {
+            this.questions = questions;
+            this.currentQuestion = 0;
+            this.answers = new Array(questions.length).fill(null);
+            this.initializeUI();
+            this.renderQuestion();
+        }
+
+        initializeUI() {
+            // Get UI elements
+            this.questionText = document.getElementById('question-text');
+            this.optionsContainer = document.getElementById('options-container');
+            this.prevButton = document.getElementById('prev-button');
+            this.nextButton = document.getElementById('next-button');
+            this.submitButton = document.getElementById('submit-button');
+            this.progressElement = document.getElementById('quiz-progress');
+
+            // Add event listeners
+            this.prevButton.addEventListener('click', () => this.previousQuestion());
+            this.nextButton.addEventListener('click', () => this.nextQuestion());
+            this.submitButton.addEventListener('click', () => this.submitQuiz());
+        }
+
+        renderQuestion() {
+            const question = this.questions[this.currentQuestion];
+            if (!question) return;
+
+            // Render question text
+            this.questionText.textContent = `${this.currentQuestion + 1}. ${question.question}`;
+            this.optionsContainer.innerHTML = '';
+
+            // Render options
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                if (this.answers[this.currentQuestion] === index) {
+                    optionElement.classList.add('selected');
+                }
+                optionElement.textContent = option;
+                optionElement.addEventListener('click', () => this.selectOption(index));
+                this.optionsContainer.appendChild(optionElement);
+            });
+
+            // Update progress and navigation buttons
+            this.updateProgress();
+            this.updateNavButtons();
+        }
+
+        selectOption(index) {
+            this.answers[this.currentQuestion] = index;
+            this.renderQuestion();
+        }
+
+        previousQuestion() {
+            if (this.currentQuestion > 0) {
+                this.currentQuestion--;
+                this.renderQuestion();
+            }
+        }
+
+        nextQuestion() {
+            if (this.currentQuestion < this.questions.length - 1) {
+                this.currentQuestion++;
+                this.renderQuestion();
+            }
+        }
+
+        updateNavButtons() {
+            this.prevButton.disabled = this.currentQuestion === 0;
+            this.nextButton.disabled = this.currentQuestion === this.questions.length - 1;
+            this.submitButton.style.display = 
+                this.currentQuestion === this.questions.length - 1 ? 'block' : 'none';
+        }
+
+        updateProgress() {
+            this.progressElement.textContent = 
+                `Question ${this.currentQuestion + 1} of ${this.questions.length}`;
+        }
+
+        submitQuiz() {
+            const score = this.calculateScore();
+            alert(`Quiz completed! Your score: ${score}/${this.questions.length}`);
+            
+            // Quiz results
+            const results = {
+                score: score,
+                totalQuestions: this.questions.length,
+                answers: this.answers
+            };
+            console.log('Quiz Results:', results);
+            // Redirect to the login page after quiz submission
+            window.location.href = '/login'; // Replace '/login' with the desired URL
+            // Stop the camera
+            this.stopCamera();
+        }
+
+        stopCamera() {
+            const videoElement = document.querySelector('video'); // Replace with your video element selector
+            const stream = videoElement.srcObject;
+
+            if (stream) {
+                const tracks = stream.getTracks(); // Get all media tracks
+                tracks.forEach(track => track.stop()); // Stop each track
+                videoElement.srcObject = null; // Clear the video source
+            }
+        }
+
+        calculateScore() {
+            return this.answers.reduce((score, answer, index) => {
+                return score + (answer === this.questions[index].correctAnswer ? 1 : 0);
+            }, 0);
+        }
+    }
+
+    // Load questions
+    fetch('/static/questions.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to load questions');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.questions) {
+                new QuizManager(data.questions);
+            } else {
+                throw new Error('Invalid question data format');
+            }
+        })
+        .catch(error => {
+            console.error('Error initializing quiz:', error);
+            document.getElementById('quiz-container').innerHTML = 
+                '<p style="color: red;">Error loading quiz questions. Please try again later.</p>';
+        });
+});
+
+        // Add this at the start of your DOMContentLoaded event listener
+        document.addEventListener('DOMContentLoaded', (event) => {
+        // Initially hide rules screen and show button selection screen
+        document.getElementById('rulesScreen').style.display = 'none';
+        document.getElementById('buttonSelectionScreen').style.display = 'flex';
+
+        // Add click handler for Give Exam button
+        document.getElementById('giveExamButton').addEventListener('click', () => {
+            // Hide button selection screen
+            document.getElementById('buttonSelectionScreen').style.display = 'none';
+            // Show rules screen
+            document.getElementById('rulesScreen').style.display = 'flex';
+        });
+    });
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            let isFullscreen = false;
+            let isVideoActive = false;
+
+            // Hide the video feed button initially
+            const toggleButton = document.getElementById('toggleButton');
+            toggleButton.style.display = 'none';
+
+            // Remove overlay for initial rules interaction
+            document.getElementById('overlay').style.display = 'none';
+
+            document.getElementById('startButton').addEventListener('click', () => {
+                // Hide rules screen
+                document.getElementById('rulesScreen').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none'; // Allow interaction
+                document.getElementById('content').classList.remove('blur'); // Unblur content
+
+                // Show fullscreen button
+                fullscreenButton.style.display = 'block'; // Show fullscreen button after rules are dismissed
+            });
+
+            // Function to request fullscreen mode
+            function enterFullscreen() {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+                    document.documentElement.msRequestFullscreen();
+                }
+
+                // Remove the fullscreen button after fullscreen is requested
+                fullscreenButton.style.display = 'none';
+                // Remove the background blur and overlay after entering fullscreen
+                document.getElementById('content').classList.remove('blur');
+                document.getElementById('overlay').style.display = 'none';
+                isFullscreen = true;
+
+                // Show the video feed button only after entering fullscreen
+                toggleButton.style.display = 'block'; // Show video feed button after entering fullscreen
+
+                checkConditions();
+            }
+
+            // Function to handle exiting fullscreen mode
+            function handleFullscreenExit() {
+                // Show warning screen
+                document.getElementById('warningScreen').style.display = 'flex';
+                warningScreen.style.flexDirection = 'column';
+                // Apply blur to the background
+                document.getElementById('content').classList.add('blur');
+                document.getElementById('overlay').style.display = 'block';
+                isFullscreen = false;
+                toggleButton.style.display = 'none'; // Hide video feed button when exiting fullscreen
+                checkConditions();
+            }
+            // Function to check if both conditions are met
+            function checkConditions() {
+                if (isFullscreen && isVideoActive) {
+                    document.querySelector('.content').classList.remove('questions-blur'); // Remove blur from questions
+                    document.getElementById('interactionBlock').style.display = 'none'; // Allow interaction
+            
+                    // Show the submit and return buttons once the form is accessible
+                    // document.getElementById('submitFormButton').style.display = 'block';
+                    document.getElementById('returnLoginButton').style.display = 'block';
+                } else {
+                    document.querySelector('.content').classList.add('questions-blur'); // Ensure questions are blurred
+                    document.getElementById('interactionBlock').style.display = 'block'; // Block interaction
+            
+                    // Hide the buttons if the form is not accessible
+                    // document.getElementById('submitFormButton').style.display = 'none';
+                    document.getElementById('returnLoginButton').style.display = 'none';
+                }
+            }
+            
+            // Disable copy-paste and text selection
+            function disableCopyPaste() {
+                document.addEventListener('copy', (e) => e.preventDefault());
+                document.addEventListener('paste', (e) => e.preventDefault());
+                document.addEventListener('cut', (e) => e.preventDefault());
+            }
+
+            disableCopyPaste(); // Call the function to apply the restrictions
+
+            // Listen for fullscreen change events
+            document.addEventListener('fullscreenchange', () => {
+                if (!document.fullscreenElement) {
+                    handleFullscreenExit();
+                }
+            });
+            document.addEventListener('webkitfullscreenchange', () => {
+                if (!document.webkitFullscreenElement) {
+                    handleFullscreenExit();
+                }
+            });
+            document.addEventListener('mozfullscreenchange', () => {
+                if (!document.mozFullScreenElement) {
+                    handleFullscreenExit();
+                }
+            });
+            document.addEventListener('MSFullscreenChange', () => {
+                if (!document.msFullscreenElement) {
+                    handleFullscreenExit();
+                }
+            });
+            
+            // Create a fullscreen button
+            const fullscreenButton = document.createElement('button');
+            fullscreenButton.innerText = 'Enter Fullscreen';
+            fullscreenButton.className = 'fullscreen-button'; // Apply CSS class
+            fullscreenButton.addEventListener('click', enterFullscreen);
+            document.body.appendChild(fullscreenButton);
+
+            // Apply blur to the background
+            document.getElementById('content').classList.add('blur'); // Blurs the content
+
+            const videoFeed = document.getElementById('videoFeed');
+            const timeRemainingDisplay = document.getElementById('timeRemaining');
+
+            function monitorVideoFeed() {
+    const checkVideoInterval = setInterval(() => {
+        if (!videoFeed.src || videoFeed.style.display === 'none') {
+            console.warn('Video feed stopped unexpectedly.');
+            clearInterval(checkVideoInterval);
+            redirectToWarningPage();
+        }
+    }, 1000); // Check every second
+}
+
+// Function to redirect with warning behavior
+function redirectToWarningPage() {
+    // Show warning screen
+    document.getElementById('warningScreen').style.display = 'flex';
+    warningScreen.style.flexDirection = 'column';
+    
+    // Apply blur to the background
+    document.getElementById('content').classList.add('blur');
+    document.getElementById('overlay').style.display = 'block';
+    
+    // Set fullscreen flag to false (optional, if needed)
+    isFullscreen = false;
+    
+    // Hide video feed button (if needed)
+    toggleButton.style.display = 'none'; 
+
+    // Optionally, you can add a message to the warning screen
+    document.getElementById('warningMessage').innerText = 'Video feed stopped. You will be redirected shortly...';
+
+    // Optionally, hide the warning screen after a delay (mimicking the redirect behavior)
+    setTimeout(function() {
+        // After a delay, hide the warning screen (simulating redirection)
+        document.getElementById('warningScreen').style.display = 'none';
+    }, 3000); // 3 seconds delay before hiding
+}
+
+            
+
+
+            function checkVideoFeedStatus() {
+                fetch('/video_feed_status')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.active || data.time_remaining <= 0) {
+                            stopVideoFeed();
+                        } else {
+                            updateTimeRemaining(data.time_remaining);
+                            setTimeout(checkVideoFeedStatus, 1000);  // Check again in 1 second
+                        }
+                    });
+            }
+
+            function stopVideoFeed() {
+                isVideoActive = false;
+                toggleButton.textContent = 'Start Video Feed';
+                videoFeed.style.display = 'none';
+                videoFeed.src = '';
+                timeRemainingDisplay.style.display = 'none';
+                checkConditions();
+            }
+            
+            function updateTimeRemaining(timeRemaining) {
+                timeRemainingDisplay.textContent = `Time remaining: ${timeRemaining}s`;
+            }
+
+            toggleButton.addEventListener('click', async () => {
+    try {
+        const response = await axios.post('/toggle_video_feed');
+        isVideoActive = response.data.status === 'active';
+        toggleButton.textContent = isVideoActive ? 'Stop Video Feed' : 'Start Video Feed';
+        videoFeed.style.display = isVideoActive ? 'block' : 'none';
+        timeRemainingDisplay.style.display = isVideoActive ? 'block' : 'none';
+        if (isVideoActive) {
+            videoFeed.src = '/video_feed/{{ user }}';
+            checkVideoFeedStatus();  // Start checking status
+            monitorVideoFeed();      // Start monitoring the video feed
+        } else {
+            videoFeed.src = '';
+            timeRemainingDisplay.style.display = 'none';
+        }
+        checkConditions();
+    } catch (error) {
+        console.error('Error toggling video feed:', error);
+    }
+});
+
+            
+            let fullscreenActive = false;
+            let startTime = null;
+            let endTime = null;
+
+            // Handle fullscreen and visibility changes
+            document.addEventListener('fullscreenchange', () => {
+                fullscreenActive = document.fullscreenElement !== null;
+                if (fullscreenActive) {
+                    startTime = Date.now();
+                } else if (startTime) {
+                    endTime = Date.now();
+                    sendTimeData('fullscreen');
+                }
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (fullscreenActive && document.hidden) {
+                    startTime = Date.now();
+                } else if (fullscreenActive && !document.hidden && startTime) {
+                    endTime = Date.now();
+                    sendTimeData('alt-tab');
+                }
+            });
+
+            // Send time data to the server
+            function sendTimeData(type) {
+                if (startTime && endTime) {
+                    const timeElapsed = endTime - startTime;
+                    const formattedTime = formatTime(timeElapsed);
+                    fetch('/alt-tab', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            type: type,
+                            start_time: startTime,
+                            end_time: endTime,
+                            time_elapsed: formattedTime
+                        })
+                    });
+                    startTime = endTime = null; // Reset times
+                }
+            }
+
+            // Format time in seconds and milliseconds
+            function formatTime(milliseconds) {
+                const seconds = Math.floor(milliseconds / 1000);
+                const ms = milliseconds % 1000;
+                return `${seconds}.${Math.floor(ms / 10)} s`; // Display in seconds and tenths of seconds
+            }
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const proceedButton = document.getElementById('proceedButton');
+
+            proceedButton.addEventListener('click', () => {
+                const courseValue = document.getElementById('courseSelect').value;
+                const typeValue = document.getElementById('typeSelect').value;
+                const yearValue = document.getElementById('yearSelect').value;
+
+                if (courseValue && typeValue && yearValue) {
+                    // Hide button selection screen
+                    document.getElementById('buttonSelectionScreen').style.display = 'none';
+                    // Show rules screen
+                    document.getElementById('rulesScreen').style.display = 'flex';
+                } else {
+                    alert('Please select all options before proceeding');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

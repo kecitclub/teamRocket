@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Learnova</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+</head>
+<body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen bg-cover bg-center">
+    <!-- Wrapper for centering the login form -->
+    <div class="flex items-center justify-center flex-grow">
+        <div class="bg-white shadow-lg rounded-lg w-full max-w-md p-8">
+            <!-- Logo -->
+            <div class="text-center mb-6">
+                <img src="/static/images/logob.svg" alt="Learnova Logo" class="mx-auto h-16">
+            </div>
+
+            <!-- Login Title -->
+            <h2 class="text-2xl font-bold text-center text-[#422d53] mb-6">Login</h2>
+
+            <!-- Login Form -->
+            <form method="POST" action="/login">
+                <!-- Username Field -->
+                <div class="mb-4">
+                    <label for="username" class="block text-sm font-medium text-[#422d53] mb-1">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        placeholder="Enter your username" 
+                        required 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#912e54]"
+                    />
+                </div>
+
+                <!-- Password Field -->
+                <div class="mb-4 relative">
+                    <label for="password" class="block text-sm font-medium text-[#422d53] mb-1">Password</label>
+                    <input 
+                        type="password" 
+                        id="password-field" 
+                        name="password" 
+                        placeholder="Enter your password" 
+                        required 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-[#912e54]"
+                    />
+                    <img 
+                        src="/static/images/eyeclose.png" 
+                        alt="Toggle Password" 
+                        id="toggle-password" 
+                        class="absolute right-3 top-9 w-5 h-5 cursor-pointer"
+                    />
+                </div>
+
+                <!-- Submit Button -->
+                <button 
+                    type="submit" 
+                    class="w-full bg-[#912e54] hover:bg-[#751a3e] text-white font-medium py-2 rounded-md transition"
+                >
+                    Login
+                </button>
+            </form>
+
+            <!-- Forgot Password -->
+            <p class="text-center mt-4">
+                <a href="/forgot-password" class="text-sm text-[#912e54] hover:underline">
+                    Forgot Password?
+                </a>
+            </p>
+        </div>
+    </div>
+    <footer>
+        <img src="../static/images/footer.svg" alt="Footer" class="absolute bottom-0 w-full" style = "mix-blend-mode: multiply">
+    </footer>
+    
+    <script>
+        const passwordField = document.getElementById('password-field');
+        const togglePassword = document.getElementById('toggle-password');
+
+        togglePassword.addEventListener('click', function () {
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                togglePassword.src = '/static/images/eyeopen.png'; // Eye open icon
+            } else {
+                passwordField.type = 'password';
+                togglePassword.src = '/static/images/eyeclose.png'; // Eye close icon
+            }
+        });
+    </script>
+
+</body>
+</html>

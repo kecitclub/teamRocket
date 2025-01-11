@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/sdash.css">
+    <link rel="stylesheet" href="/static/calendar.css">
+    <title>Learnova Dashboard</title>
+  </head>
+  <body>
+    <div id="background">
+      <div id="leftbg">
+                <div id="logo"><img src="/static/images/logow.svg" alt="">
+                  <h2>LEARNOVA</h2>
+                </div>
+        <div id="overview">
+          <h2>OVERVIEW</h2>
+          <div class="ovList"><a href="sdashboard.html">Dashboard</a><a href="sdashboard.html">Exams</a><a href="sdashboard.html">Resources</a></div>
+        </div>
+            <div id="final">
+              <div class="settings"><img src="/static/images/settingsw.png" alt="">
+                <h2>Settings</h2>
+              </div>
+              <div class="logout"><img src="/static/images/logout.png" alt="">
+                <h2>Log Out</h2>
+              </div>
+            </div>
+      </div>
+      <div id="middlebg">
+        <searchBar Search here... search-icon.svg></searchBar>
+            <div class="search-container">
+              <input class="search-input" type="text" placeholder="Search your course...">
+              <div class="search-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65">     </line>
+                </svg>
+              </div>
+            </div>
+        <div id="welcome">
+          <div id="image"> <img src="/static/images/wimage.png" alt=""></div>
+          <div id="text">
+            <h2>Welcome back! It's been a while we saw you!</h2>
+            <div class="revisit">
+              <h2>Revisit your courses?</h2><a href="sdashboard.html">
+                <h1>Go to your courses </h1>
+                <button><img src="/static/images/arrow.png" alt=""></button></a>
+            </div>
+          </div>
+        </div>
+        <div id="upcoming">
+          <h2>Upcoming Exam: 
+            <h1> 
+              <u> <b>Engineering Economics</b></u>
+            </h1>
+          </h2>
+        </div>
+        <div id="recommended">
+          <h1>Recommended PDFs:</h1>
+          <div id="carousel">
+            <div class="c" id="c1">
+              <h1>Chapter 1 Introduction</h1>
+            </div>
+            <div class="c" id="c2">
+              <h1>Chapter 2 Linear Gradient Series</h1>
+            </div>
+            <div class="c" id="c3">
+              <h1>Chapter 3 Present worth, Future Worth and Annuity</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="rightbg">
+        <div id="header"><img src="/static/images/bell.png" alt="">
+              <div class="profile"><img src="/static/images/profile.png" alt=""><a href="sdashboard.html">Profile</a></div>
+              <div id="calendar">
+                <div class="calendar">
+                  <div class="calendar-header">
+                    <button id="prev">←</button>
+                    <h3 id="month-year"></h3>
+                    <button id="next">→</button>
+                  </div>
+                  <div class="days" id="days-container">
+                    <!-- Days will be dynamically generated-->
+                  </div>
+                </div>
+              </div>
+        </div>
+      </div>
+    </div>
+    <script src="/js/calculator.js"></script>
+  </body>
+</html>

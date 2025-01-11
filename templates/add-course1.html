@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Course</title>
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .module-section {
+            border: 1px solid #eee;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .chapter-section {
+            margin-left: 2rem;
+            padding: 1rem;
+            border-left: 2px solid #eee;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="file"] {
+            margin: 0.5rem 0;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            background: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1b5e20;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            margin-left: 0.5rem;
+        }
+
+        .remove-btn:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Add New Course</h2>
+        <form id="courseForm" enctype="multipart/form-data">
+            <div class="form-section">
+                <div class="form-group">
+                    <label>Course Title</label>
+                    <input type="text" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label>Instructor Name</label>
+                    <input type="text" name="instructor" required>
+                </div>
+                <div class="form-group">
+                    <label>Semester</label>
+                    <input type="text" name="semester" required>
+                </div>
+                <div class="form-group">
+                    <label>Course Image</label>
+                    <input type="file" name="courseImage" accept="image/*" required>
+                </div>
+            </div>
+
+            <div id="modulesContainer">
+                <!-- Modules will be added here -->
+            </div>
+
+            <button type="button" onclick="addModule()">Add Module</button>
+            <button type="submit">Save Course</button>
+        </form>
+    </div>
+
+    <script>
+        let moduleCount = 0;
+
+        function addModule() {
+            moduleCount++;
+            const moduleHtml = `
+                <div class="module-section" id="module-${moduleCount}">
+                    <h3>Module ${moduleCount}</h3>
+                    <div class="form-group">
+                        <label>Module Title</label>
+                        <input type="text" name="modules[${moduleCount}][title]" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Units</label>
+                        <input type="number" name="modules[${moduleCount}][units]" required>
+                    </div>
+                    <div class="chapters-container">
+                        <!-- Chapters will be added here -->
+                    </div>
+                    <button type="button" onclick="addChapter(${moduleCount})">Add Resources</button>
+                    <button type="button" class="remove-btn" onclick="removeModule(${moduleCount})">Remove Module</button>
+                </div>
+            `;
+            document.getElementById('modulesContainer').insertAdjacentHTML('beforeend', moduleHtml);
+        }
+
+        function addChapter(moduleId) {
+            const chapterCount = document.querySelectorAll(`#module-${moduleId} .chapter-section`).length + 1;
+            const chapterHtml = `
+                <div class="chapter-section" id="module-${moduleId}-chapter-${chapterCount}">
+                    
+                    <div class="form-group">
+                        <label>PDF Resource</label>
+                        <input type="file" name="modules[${moduleId}][chapters][${chapterCount}][pdf]" accept=".pdf" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Video URL</label>
+                        <input type="text" name="modules[${moduleId}][chapters][${chapterCount}][video]" placeholder="YouTube URL">
+                    </div>
+                    <button type="button" class="remove-btn" onclick="removeChapter(${moduleId}, ${chapterCount})">Remove Chapter</button>
+                </div>
+            `;
+            document.querySelector(`#module-${moduleId} .chapters-container`).insertAdjacentHTML('beforeend', chapterHtml);
+        }
+
+        function removeModule(moduleId) {
+            document.getElementById(`module-${moduleId}`).remove();
+        }
+
+        function removeChapter(moduleId, chapterId) {
+            document.getElementById(`module-${moduleId}-chapter-${chapterId}`).remove();
+        }
+
+        document.getElementById('courseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            try {
+                const response = await fetch('/api/courses', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    alert('Course added successfully!');
+                    window.location.href = '/teacher/courses';
+                } else {
+                    alert('Error adding course');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error adding course');
+            }
+        });
+    </script>
+</body>
+</html>

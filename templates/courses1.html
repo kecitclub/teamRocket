@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background-color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 40px;
+            margin-right: 10px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            height: calc(100vh - 64px);
+            padding: 1rem;
+            position: fixed;
+            left: 0;
+            border-right: 1px solid #eee;
+        }
+
+        .sidebar-item {
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .course-image {
+            width: 100%;
+            height: 150px;
+            background: #2c3e50;
+            object-fit: cover;
+        }
+
+        .course-content {
+            padding: 1rem;
+        }
+
+        .course-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .course-info {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .module-list {
+            display: none;
+            padding: 2rem;
+        }
+
+        .module-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .resources-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .resource-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .resource-item:hover {
+            background-color: #f0f0f0;
+            border-radius: 4px;
+        }
+
+        .back-button {
+            display: none;
+            margin-bottom: 1rem;
+            padding: 0.5rem 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .back-button:hover {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <img src="/logo.png" alt="Logo" class="logo">
+        <h1>Student Dashboard</h1>
+    </nav>
+
+    <div class="sidebar">
+        <div class="sidebar-item">Overview</div>
+        <div class="sidebar-item">Online Learning</div>
+        <div class="sidebar-item">Announcements</div>
+        <div class="sidebar-item">Assignments</div>
+        <div class="sidebar-item">Grades</div>
+        <div class="sidebar-item">Quizzes</div>
+        <div class="sidebar-item">Attendance</div>
+        <div class="sidebar-item">Files</div>
+    </div>
+
+    <main class="main-content">
+        <button class="back-button">← Back to Courses</button>
+        
+        <div class="course-grid" id="courseGrid">
+            <!-- Courses will be dynamically added here -->
+        </div>
+
+        <div class="module-list" id="moduleList">
+            <!-- Modules will be dynamically added here -->
+        </div>
+    </main>
+
+    <script>
+        // Sample course data
+        const courses = [
+            {
+                id: 1,
+                title: "Microdegree™ in Artificial Intelligence - Section A",
+                instructor: "ROJESH SHIKHRAKAR",
+                semester: "Semester 1",
+                modules: [
+                    {
+                        title: "Introduction to AI/ML and Data Science",
+                        units: 1,
+                        resources: [
+                            { type: "pdf", name: "Introduction to AI", url: "#" },
+                            { type: "video", name: "AI Fundamentals", url: "https://www.youtube.com/watch?v=zUpVhnR5vdc" }
+                        ]
+                    },
+                    {
+                        title: "Data Wrangling",
+                        units: 2,
+                        resources: [
+                            { type: "pdf", name: "Data Cleaning Guide", url: "#" },
+                            { type: "video", name: "Data Preparation Tutorial", url: "https://www.youtube.com/watch?v=csbGkbkooeY" }
+                        ]
+                    }
+                ]
+            }
+            // Add more courses as needed
+        ];
+
+        const courseGrid = document.getElementById('courseGrid');
+        const moduleList = document.getElementById('moduleList');
+        const backButton = document.querySelector('.back-button');
+
+        // Render courses
+        function renderCourses() {
+            courseGrid.innerHTML = courses.map(course => `
+                <div class="course-card" onclick="showModules(${course.id})">
+                    <div class="course-image"></div>
+                    <div class="course-content">
+                        <h3 class="course-title">${course.title}</h3>
+                        <p class="course-info">Instructor: ${course.instructor}</p>
+                        <p class="course-info">${course.semester}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Show modules for selected course
+        function showModules(courseId) {
+            const course = courses.find(c => c.id === courseId);
+            if (!course) return;
+
+            courseGrid.style.display = 'none';
+            moduleList.style.display = 'block';
+            backButton.style.display = 'block';
+
+            moduleList.innerHTML = course.modules.map(module => `
+                <div class="module-card">
+                    <h3>${module.title}</h3>
+                    <p>Units: ${module.units} | Chapters: ${module.chapters}</p>
+                    
+                    <div class="resources-section">
+                        <h4>Resources:</h4>
+                        ${module.resources.map(resource => `
+                            <a href="${resource.url}" class="resource-item">
+                                ${resource.type === 'pdf' ? '📄' : '🎥'} ${resource.name}
+                            </a>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Back button functionality
+        backButton.addEventListener('click', () => {
+            moduleList.style.display = 'none';
+            courseGrid.style.display = 'grid';
+            backButton.style.display = 'none';
+        });
+
+        // Initial render
+        renderCourses();
+    </script>
+</body>
+</html>

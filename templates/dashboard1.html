@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheating Detection Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        /* Disable text selection for the entire page */
+        body {
+            user-select: none; /* Prevent text selection */
+        }
+        input, textarea, select {
+            user-select: none; /* Prevent text selection inside inputs */
+        }
+        
+        /* Style for the fullscreen button */
+        .fullscreen-button {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            font-size: 18px;
+            background-color: #009688; /* Stylish green color */
+            color: #fff; /* White text */
+            border: none; /* Remove default border */
+            border-radius: 12px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
+            z-index: 1000; /* Ensure it appears above other elements */
+            display: none; /* Initially hidden */
+        }
+
+        /* Apply blur to the background */
+        #content.blur {
+            filter: blur(10px); /* Blurs the content */
+        }
+
+        /* Overlay to block interaction */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            z-index: 1000; /* Ensure it appears above other elements */
+        }
+
+        /* Style for the warning screen */
+        .warning-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000; /* Solid black background */
+            display: none; /* Initially hidden */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Ensure it appears above other elements */
+        }
+
+        .warning-sign {
+            font-size: 50px;
+            color: #8B0000;
+            background-color: black;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+        }
+        
+        /* Style for redirect button */
+        .redirect-link {
+            display: inline-block; /* Make it behave like a button */
+            margin-top: 20px;
+            padding: 10px 20px; /* Add some padding for better touch interaction */
+            font-size: 18px;
+            color: #fff;
+            background-color: #009688; /* Match the stylish green color used elsewhere */
+            border: none; /* Remove default button borders */
+            border-radius: 8px; /* Smooth, rounded corners */
+            text-decoration: none; /* Remove underline from link-style text */
+            cursor: pointer; /* Change cursor to pointer on hover */
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Add smooth hover transitions */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add subtle shadow for depth */
+        }
+
+        .redirect-link:hover {
+            background-color: #00796b; /* Darken the green on hover */
+            transform: translateY(-2px); /* Slight lift effect */
+        }
+
+        .redirect-link:active {
+            background-color: #004d40; /* Darker green on active press */
+            transform: translateY(0); /* Remove lift effect */
+        }
+
+        /* Blur effect for questions */
+        .questions-blur {
+            filter: blur(10px); /* Initial blur effect */
+        }
+
+        /* Block interaction with content */
+        .interaction-block {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0); /* Transparent background */
+            z-index: 1000; /* Ensure it appears above other elements */
+            pointer-events: auto; /* Allow interaction blocking */
+        }
+
+        #timeRemaining {
+            position: fixed;
+            top: 350px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .rules-box {
+            border: 2px solid #009688; /* Border color and thickness */
+            border-radius: 8px; /* Rounded corners */
+            padding: 20px; /* Spacing inside the box */
+            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */       
+            max-width: 600px; /* Maximum width of the box */
+            margin: 0 auto; /* Center the box on the page */
+        }
+        
+        .rules-content {
+            text-align: left; /* Align text to the left */
+            color: white; /* Text color */
+            font-size: 20px; /* Increased font size for rules text */
+        }
+        
+        .rules-heading {
+            color: #009688; /* Change this to your desired color */
+            font-size: 40px; /* Increased font size for the heading */
+            font-weight: bold; /* Make it bold */
+            text-align: center; /* Center align the heading */
+            margin: 10px 0; /* Reduced spacing above and below the heading */
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: center; /* Align buttons to the right */
+            margin-top: 10px; /* Add spacing above buttons */
+        }
+        
+        .form-button {
+            padding: 10px 20px;
+            margin-left: 10px; /* Add some space between the buttons */
+            font-size: 18px;
+            background-color: #009688; /* Matching button color */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .form-button:hover {
+            background-color: #00796b;
+        }
+        
+        .form-button:active {
+            background-color: #004d40;
+            transform: translateY(2px);
+        }        
+
+    </style>
+</head>
+<body>
+    <div id="content" class="dashboard blur">
+        <!-- <div class="header">
+            <h1>Welcome</h1>
+        </div> -->
+        
+        <div class="content questions-blur">
+            <div class="interaction-block" id="interactionBlock"></div>
+            <div class="question-list">
+                <h2 style="text-align: center;">General Knowledge Questions</h2>
+                <div class="iframe-container" style="text-align: center;">
+                    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSc8xCbgchE2A97_tPbQS6UgT-_V_7dy9NpE8gcG-rAEj-qnkg/viewform?embedded=true" 
+                    width="100%" 
+                    height="800" 
+                    frameborder="0" 
+                    marginheight="0"    
+                    marginwidth="0">
+                    </iframe>
+                </div>                
+                <!-- New Buttons -->
+                <div class="form-actions">
+                    <p style="color: black; margin-right: 500px;">Submit Google Forms before returning to login.</p>                    
+                    <button id="returnLoginButton" class="form-button" style="display: none;" onclick="window.location.href='login'">Return to Login</button>
+                </div>   
+            </div>
+        </div>
+        <div class="video-container">
+            <button id="toggleButton">Start Video Feed</button>
+            <img id="videoFeed" style="display: none;" alt="Video Feed">
+            <div id="timeRemaining" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Rules Screen -->
+    <div id="rulesScreen" class="warning-screen" style="display: flex;">
+        <div class="rules-box">
+            <div class="rules-content">
+                <h2 class="rules-heading">Rules and Regulations</h2>
+                <p>1. No cheating allowed.</p>
+                <p>2. Follow all instructions carefully.</p>
+                <p>3. Keep your camera on at all times.</p>
+                <p>4. Report any technical issues immediately.</p>
+                <button class="redirect-link" id="startButton">Enter the Exam</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay to block interactions -->
+    <div id="overlay" class="overlay" style="display: none;"></div>
+
+    <!-- Warning Screen -->
+    <div id="warningScreen" class="warning-screen">
+        <div class="warning-sign">WARNING</div>
+        <button class="redirect-link" onclick="window.location.href='login'">Go to Login</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            let isFullscreen = false;
+            let isVideoActive = false;
+
+            // Hide the video feed button initially
+            const toggleButton = document.getElementById('toggleButton');
+            toggleButton.style.display = 'none';
+
+            // Remove overlay for initial rules interaction
+            document.getElementById('overlay').style.display = 'none';
+
+            document.getElementById('startButton').addEventListener('click', () => {
+                // Hide rules screen
+                document.getElementById('rulesScreen').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none'; // Allow interaction
+                document.getElementById('content').classList.remove('blur'); // Unblur content
+
+                // Show fullscreen button
+                fullscreenButton.style.display = 'block'; // Show fullscreen button after rules are dismissed
+            });
+
+            // Function to request fullscreen mode
+            function enterFullscreen() {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+                    document.documentElement.msRequestFullscreen();
+                }
+
+                // Remove the fullscreen button after fullscreen is requested
+                fullscreenButton.style.display = 'none';
+                // Remove the background blur and overlay after entering fullscreen
+                document.getElementById('content').classList.remove('blur');
+                document.getElementById('overlay').style.display = 'none';
+                isFullscreen = true;
+
+                // Show the video feed button only after entering fullscreen
+                toggleButton.style.display = 'block'; // Show video feed button after entering fullscreen
+
+                checkConditions();
+            }
+
+            // Function to handle exiting fullscreen mode
+            function handleFullscreenExit() {
+                // Show warning screen
+                document.getElementById('warningScreen').style.display = 'flex';
+                warningScreen.style.flexDirection = 'column';
+                // Apply blur to the background
+                document.getElementById('content').classList.add('blur');
+                document.getElementById('overlay').style.display = 'block';
+                isFullscreen = false;
+                toggleButton.style.display = 'none'; // Hide video feed button when exiting fullscreen
+                checkConditions();
+            }
+            // Function to check if both conditions are met
+            function checkConditions() {
+                if (isFullscreen && isVideoActive) {
+                    document.querySelector('.content').classList.remove('questions-blur'); // Remove blur from questions
+                    document.getElementById('interactionBlock').style.display = 'none'; // Allow interaction
+            
+                    // Show the submit and return buttons once the form is accessible
+                    // document.getElementById('submitFormButton').style.display = 'block';
+                    document.getElementById('returnLoginButton').style.display = 'block';
+                } else {
+                    document.querySelector('.content').classList.add('questions-blur'); // Ensure questions are blurred
+                    document.getElementById('interactionBlock').style.display = 'block'; // Block interaction
+            
+                    // Hide the buttons if the form is not accessible
+                    // document.getElementById('submitFormButton').style.display = 'none';
+                    document.getElementById('returnLoginButton').style.display = 'none';
+                }
+            }
+            
+            // Disable copy-paste and text selection
+            function disableCopyPaste() {
+                document.addEventListener('copy', (e) => e.preventDefault());
+                document.addEventListener('paste', (e) => e.preventDefault());
+                document.addEventListener('cut', (e) => e.preventDefault());
+            }
+
+            disableCopyPaste(); // Call the function to apply the restrictions
+
+            // Listen for fullscreen change events
+            document.addEventListener('fullscreenchange', () => {
+                if (!document.fullscreenElement) {
+                    handleFullscreenExit();
+                }
+            });
+            document.addEventListener('webkitfullscreenchange', () => {
+                if (!document.webkitFullscreenElement) {
+                    handleFullscreenExit();
+                }
+            });
+            document.addEventListener('mozfullscreenchange', () => {
+                if (!document.mozFullScreenElement) {
+                    handleFullscreenExit();
+                }
+            });
+            document.addEventListener('MSFullscreenChange', () => {
+                if (!document.msFullscreenElement) {
+                    handleFullscreenExit();
+                }
+            });
+            
+            // Create a fullscreen button
+            const fullscreenButton = document.createElement('button');
+            fullscreenButton.innerText = 'Enter Fullscreen';
+            fullscreenButton.className = 'fullscreen-button'; // Apply CSS class
+            fullscreenButton.addEventListener('click', enterFullscreen);
+            document.body.appendChild(fullscreenButton);
+
+            // Apply blur to the background
+            document.getElementById('content').classList.add('blur'); // Blurs the content
+
+            const videoFeed = document.getElementById('videoFeed');
+            const timeRemainingDisplay = document.getElementById('timeRemaining');
+
+            function checkVideoFeedStatus() {
+                fetch('/video_feed_status')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.active || data.time_remaining <= 0) {
+                            stopVideoFeed();
+                        } else {
+                            updateTimeRemaining(data.time_remaining);
+                            setTimeout(checkVideoFeedStatus, 1000);  // Check again in 1 second
+                        }
+                    });
+            }
+
+            function stopVideoFeed() {
+                isVideoActive = false;
+                toggleButton.textContent = 'Start Video Feed';
+                videoFeed.style.display = 'none';
+                videoFeed.src = '';
+                timeRemainingDisplay.style.display = 'none';
+                checkConditions();
+            }
+            
+            function updateTimeRemaining(timeRemaining) {
+                timeRemainingDisplay.textContent = `Time remaining: ${timeRemaining}s`;
+            }
+
+            toggleButton.addEventListener('click', async () => {
+                try {
+                    const response = await axios.post('/toggle_video_feed');
+                    isVideoActive = response.data.status === 'active';
+                    toggleButton.textContent = isVideoActive ? 'Stop Video Feed' : 'Start Video Feed';
+                    videoFeed.style.display = isVideoActive ? 'block' : 'none';
+                    timeRemainingDisplay.style.display = isVideoActive ? 'block' : 'none';
+                    if (isVideoActive) {
+                        videoFeed.src = '/video_feed/{{ user }}';
+                        checkVideoFeedStatus();  // Start checking status
+                    } else {
+                        videoFeed.src = '';
+                        timeRemainingDisplay.style.display = 'none';
+                    }
+                    checkConditions();
+                } catch (error) {
+                    console.error('Error toggling video feed:', error);
+                }
+            });
+            
+            let fullscreenActive = false;
+            let startTime = null;
+            let endTime = null;
+
+            // Handle fullscreen and visibility changes
+            document.addEventListener('fullscreenchange', () => {
+                fullscreenActive = document.fullscreenElement !== null;
+                if (fullscreenActive) {
+                    startTime = Date.now();
+                } else if (startTime) {
+                    endTime = Date.now();
+                    sendTimeData('fullscreen');
+                }
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (fullscreenActive && document.hidden) {
+                    startTime = Date.now();
+                } else if (fullscreenActive && !document.hidden && startTime) {
+                    endTime = Date.now();
+                    sendTimeData('alt-tab');
+                }
+            });
+
+            // Send time data to the server
+            function sendTimeData(type) {
+                if (startTime && endTime) {
+                    const timeElapsed = endTime - startTime;
+                    const formattedTime = formatTime(timeElapsed);
+                    fetch('/alt-tab', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            type: type,
+                            start_time: startTime,
+                            end_time: endTime,
+                            time_elapsed: formattedTime
+                        })
+                    });
+                    startTime = endTime = null; // Reset times
+                }
+            }
+
+            // Format time in seconds and milliseconds
+            function formatTime(milliseconds) {
+                const seconds = Math.floor(milliseconds / 1000);
+                const ms = milliseconds % 1000;
+                return `${seconds}.${Math.floor(ms / 10)} s`; // Display in seconds and tenths of seconds
+            }
+        });
+    </script>
+</body>
+</html> 

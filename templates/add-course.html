@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Add Course</title>
+        <style>
+            body {
+                
+                font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+                    "Helvetica Neue", sans-serif;
+            }
+            #leftbg {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 300px;
+                height: 100vh;
+                background-color: #3e1f41;
+                box-shadow: 2px 5px 10px 10px rgb(163, 154, 154);
+                z-index: 2;
+            }
+
+            #teachersAllContent {
+                margin-left: 300px;
+                flex: 1;
+                min-height: 100vh;
+            }
+
+            #leftbg #logo {
+                color: aliceblue;
+                padding-top: 30px;
+                padding-left: 50px;
+                align-items: center;
+                display: flex;
+                flex-direction: row;
+            }
+
+            #leftbg #logo img {
+                width: 25%;
+                height: auto;
+                padding-right: 20px;
+            }
+
+            #leftbg #logo h2 {
+                font-size: 20px;
+            }
+
+            #leftbg #overview h2 {
+                font-size: 15px;
+                margin-left: 20px;
+            }
+
+            #leftbg #overview {
+                color: aliceblue;
+                margin-top: 60px;
+                padding-left: 50px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            #leftbg #overview .ovList {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+            }
+
+            #leftbg #overview .ovList a {
+                height: 30px;
+                width: 70%;
+                border: 1px rgb(92, 88, 114) solid;
+                border-left: 0;
+                border-right: 0;
+                border-top: 0;
+                font-size: 20px;
+                text-decoration: none;
+                color: aliceblue;
+                padding: 10%;
+            }
+
+            #leftbg #overview .ovList a:hover {
+                background-color: #332f4c;
+            }
+
+            #leftbg #final {
+                display: flex;
+                flex-direction: column;
+                margin-top: 150px;
+                padding: 50px;
+                margin-bottom: 0;
+            }
+
+            #leftbg #final .settings,
+            #leftbg #final .logout {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+            }
+
+            #leftbg #final .settings h2,
+            #leftbg #final .logout h2 {
+                font-size: 15px;
+                padding-left: 30px;
+            }
+
+            #leftbg #final .settings h2 {
+                color: aliceblue;
+            }
+
+            #leftbg #final .logout h2 {
+                color: rgb(255, 38, 38);
+            }
+
+            #leftbg #final .settings img {
+                width: 25px;
+                height: auto;
+            }
+
+            #leftbg #final .logout img {
+                width: 25px;
+                height: auto;
+            }
+
+            /* Original form styles */
+            .form-container
+            {
+                /* border: 2px red solid; */
+                min-height: 97vh;
+                margin-top: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #f5f5f7;
+                /* width: 100%; */
+            }
+            .form-section {
+                max-width: 800px;
+                margin: 2rem auto;
+                padding: 2rem;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .module-section {
+                border: 1px solid #eee;
+                padding: 1rem;
+                margin: 1rem 0;
+                border-radius: 4px;
+            }
+
+            .chapter-section {
+                margin-left: 2rem;
+                padding: 1rem;
+                border-left: 2px solid #eee;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+                width: 700px;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: 500;
+            }
+
+            input[type="text"],
+            input[type="number"],
+            select {
+                width: 100%;
+                padding: 0.5rem;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                margin-bottom: 0.5rem;
+            }
+
+            button {
+                padding: 0.5rem 1rem;
+                background: #742e7d;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            button:hover {
+                background: #1b5e20;
+            }
+
+            .remove-btn {
+                background: #dc3545;
+                margin-left: 0.5rem;
+            }
+
+            .remove-btn:hover {
+                background: #c82333;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="leftbg">
+            <div id="logo">
+                <img src="/static/images/logow.svg" alt="" />
+                <h2>LEARNOVA</h2>
+            </div>
+            <div id="overview">
+                <h2>OVERVIEW</h2>
+                <div class="ovList">
+                    <a href="sdashboard.html">Dashboard</a
+                    ><a href="sdashboard.html">Exams</a
+                    ><a href="sdashboard.html">Courses</a>
+                    <a href="sdashboard.html">Statistics</a>
+                </div>
+            </div>
+            <div id="final">
+                <div class="settings">
+                    <img src="/static/images/settingsw.png" alt="" />
+                    <h2>Settings</h2>
+                </div>
+                <div class="logout">
+                    <img src="/static/images/logout.png" alt="" />
+                    <h2>Log Out</h2>
+                </div>
+            </div>
+        </div>
+        <div class="form-container">
+            <div class="form-section">
+                <h2>Add New Course</h2>
+                <form id="courseForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>Course Title</label>
+                        <input type="text" name="title" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Instructor Name</label>
+                        <input type="text" name="instructor" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Semester</label>
+                        <input type="text" name="semester" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Course Image</label>
+                        <input
+                            type="file"
+                            name="courseImage"
+                            accept="image/*"
+                            required
+                        />
+                    </div>
+
+                    <div id="modulesContainer">
+                        <!-- Modules will be added here -->
+                    </div>
+
+                    <button type="button" onclick="addModule()">
+                        Add Module
+                    </button>
+                    <button type="submit">Save Course</button>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            let moduleCount = 0;
+
+            function addModule() {
+                moduleCount++;
+                const moduleHtml = `
+                <div class="module-section" id="module-${moduleCount}">
+                    <h3>Module ${moduleCount}</h3>
+                    <div class="form-group">
+                        <label>Module Title</label>
+                        <input type="text" name="modules[${moduleCount}][title]" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Units</label>
+                        <input type="number" name="modules[${moduleCount}][units]" required>
+                    </div>
+                    <div class="chapters-container">
+                        <!-- Chapters will be added here -->
+                    </div>
+                    <button type="button" onclick="addChapter(${moduleCount})">Add Resources</button>
+                    <button type="button" class="remove-btn" onclick="removeModule(${moduleCount})">Remove Module</button>
+                </div>
+            `;
+                document
+                    .getElementById("modulesContainer")
+                    .insertAdjacentHTML("beforeend", moduleHtml);
+            }
+
+            function addChapter(moduleId) {
+                const chapterCount =
+                    document.querySelectorAll(
+                        `#module-${moduleId} .chapter-section`
+                    ).length + 1;
+                const chapterHtml = `
+                <div class="chapter-section" id="module-${moduleId}-chapter-${chapterCount}">
+                    <div class="form-group">
+                        <label>PDF Resource</label>
+                        <input type="file" name="modules[${moduleId}][chapters][${chapterCount}][pdf]" accept=".pdf" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Video URL</label>
+                        <input type="text" name="modules[${moduleId}][chapters][${chapterCount}][video]" placeholder="YouTube URL">
+                    </div>
+                    <button type="button" class="remove-btn" onclick="removeChapter(${moduleId}, ${chapterCount})">Remove Chapter</button>
+                </div>
+            `;
+                document
+                    .querySelector(`#module-${moduleId} .chapters-container`)
+                    .insertAdjacentHTML("beforeend", chapterHtml);
+            }
+
+            function removeModule(moduleId) {
+                document.getElementById(`module-${moduleId}`).remove();
+            }
+
+            function removeChapter(moduleId, chapterId) {
+                document
+                    .getElementById(`module-${moduleId}-chapter-${chapterId}`)
+                    .remove();
+            }
+
+            document
+                .getElementById("courseForm")
+                .addEventListener("submit", async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.target);
+
+                    try {
+                        const response = await fetch("/api/courses", {
+                            method: "POST",
+                            body: formData,
+                        });
+
+                        if (response.ok) {
+                            alert("Course added successfully!");
+                            window.location.href = "/teacher/courses";
+                        } else {
+                            alert("Error adding course");
+                        }
+                    } catch (error) {
+                        console.error("Error:", error);
+                        alert("Error adding course");
+                    }
+                });
+        </script>
+    </body>
+</html>

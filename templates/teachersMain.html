@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="../static/sdash.css">
+    <link rel="stylesheet" href="../static/calendar.css"> -->
+    <title>Learnova Dashboard</title>
+    <style>
+      body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+        sans-serif;
+    margin: 0;
+}
+#background {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+#background #leftbg {
+    box-shadow: 2px 5px 10px 10px rgb(163, 154, 154);
+    /* border: 2px red solid; */
+    padding: 0;
+    margin-left: 0;
+    height: 100%;
+    width: 30%;
+    background-color: #65183b;
+}
+#background #leftbg #logo {
+    color: aliceblue;
+    padding-top: 30px;
+    /* justify-content: space-evenly; */
+    padding-left: 50px;
+    align-items: center;
+    /* border: 2px red solid; */
+    display: flex;
+    flex-direction: row;
+}
+#background #leftbg #logo img {
+    width: 25%;
+    height: auto;
+    padding-right: 20px;
+}
+#background #leftbg #logo h2 {
+    font-size: 20px;
+}
+
+#background #leftbg #overview
+{
+    /* margin-top: 0; */
+}
+#background #leftbg #overview h2 {
+    font-size: 15px;
+}
+
+#background #leftbg #overview h2 {
+    margin-left: 20px;
+}
+#background #leftbg #overview {
+    color: aliceblue;
+    margin-top: 60px;
+    padding-left: 50px;
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+}
+
+#background #leftbg #overview .ovList {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    /* border: 1px rgb(92, 88, 114) solid; */
+}
+
+#background #leftbg #overview .ovList a {
+    height: 30px;
+    width: 70%;
+    border: 1px rgb(92, 88, 114) solid;
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+    font-size: 20px;
+    text-decoration: none;
+    color: aliceblue;
+    padding: 10%;
+}
+
+#background #leftbg #overview .ovList a:hover {
+    background-color: #332f4c;
+}
+#background #leftbg #final {
+    display: flex;
+    flex-direction: column;
+    margin-top: 150px;
+    /* justify-content: flex-end; */
+    padding: 50px;
+    /* align-items: center; */
+    margin-bottom: 0;
+    /* border: 2px solid red; */
+}
+
+#background #leftbg #final .settings,
+#background #leftbg #final .logout {
+    display: flex;
+    flex-direction: row;
+    /* padding: 10px; */
+    align-items: center;
+    /* justify-content: baseline; */
+}
+#background #leftbg #final .settings h2,
+#background #leftbg #final .logout h2 {
+    font-size: 15px;
+    padding-left: 30px;
+}
+
+#background #leftbg #final .settings h2 {
+    color: aliceblue;
+}
+
+#background #leftbg #final .logout h2 {
+    color: rgb(255, 38, 38);
+}
+#background #leftbg #final .settings img {
+    width: 25px;
+    height: auto;
+    /* padding-right: 50px; */
+}
+#background #leftbg #final .logout img {
+    width: 25px;
+    height: auto;
+    /* padding-right: 70px; */
+}
+
+/*middle carousel*/
+
+
+
+
+#middlebg {
+    width: 100%;
+    max-width: 70%;
+    height: 100%;
+    
+    background-color: rgb(217, 227, 236);
+    background-repeat: none;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0; /* Ensures no extra spacing */
+    margin: auto; 
+    /* justify-content: space-around; */
+}
+
+.search-container {
+    
+    position: relative;
+    width: 100%;
+    max-width: 700px;
+    /* max-width: 70%; */
+    height: 40px;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+}
+
+.search-input {
+    width: 100%;
+    height: 100%;
+    padding: 12px 48px 12px 30px;
+    border: none;
+    border-radius: 40px;
+    background: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    outline: none;
+}
+
+.search-icon {
+    position: absolute;
+    top: 70%;
+    right: 0px;
+    transform: translateY(-35%);
+    color: #666;
+    pointer-events: none;
+}
+
+#middlebg #welcome {
+    /* border: 2px red solid; */
+    padding: 50px;
+    margin-top: 50px;
+    width: 800px;
+    /* width: 90%; */
+    margin-left: 30px;
+    /* max-width: 90%; */
+    position: auto;
+    display: flex;
+    margin-left: 100px;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+#middlebg #welcome #image img
+{
+    width: 80px;
+    
+    border-radius: 50px;
+    /* background-color: #912e54; */
+    box-shadow: 10px 10px 20px 2px grey;
+}
+
+#middlebg #welcome #text
+{
+    /* padding-left: 20px; */
+    margin-left: 20px;
+    background-color:#97225793 ;
+    width: 90%;
+    padding: 10px;
+    box-shadow: 10px 10px 20px 2px grey;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    border: 1px #ffffff solid;
+    border-bottom: none;
+    border-right: none;
+    /* align-items:center ; */
+    justify-content: space-around;
+    color: aliceblue;
+}
+#middlebg #welcome .revisit{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    /* margin-right: auto; */
+    padding-right: 40px;
+}
+
+#middlebg #welcome .revisit a{
+    text-decoration: none;
+    border: 2px solid rgb(255, 255, 255);
+    color: white;
+    font-size: 20px;
+    display: flex;
+    /* flex-direction: column; */
+    /* justify-content: s; */
+    align-items: center;
+    padding: 5px;
+    border-radius: 40px;
+    background-color: rgba(250, 250, 250, 0.425);
+}
+#middlebg #welcome .revisit a h1{
+    font-size: 20px;
+    padding-right: 20px;
+}
+
+
+#middlebg #welcome .revisit button
+{
+    /* background-color: rgba(242, 250, 242, 0); */
+    border-radius: 200px;
+    padding: 0;
+    width: fit-content;
+
+
+}
+
+#middlebg #welcome .revisit button img{
+    width: 35px;
+    height: auto;
+
+}
+
+#middlebg #recommended
+{
+    width: 70%;
+    height: 250px;
+    /* border: 2px solid red; */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+
+}
+#middlebg #recommended #carousel
+{
+    display: flex;
+    flex-direction: row;
+    justify-content:space-around;
+    align-items: center;
+    /* border: 2px solid red; */
+    width: 100%;
+    height: 100%;
+    margin-top: 10px;
+}
+#middlebg #recommended #carousel #c1,
+#middlebg #recommended #carousel #c2, 
+#middlebg #recommended #carousel #c3
+{  
+    width: inherit;
+    height: inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    /* border: 2px solid white; */
+    background-color: #a3a0a13f;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin: 10px;
+    border-radius: 3px;
+    box-shadow: 2px 12px 5px 5px rgb(201, 198, 198);
+    /* padding: auto; */
+}
+#middlebg #recommended #carousel #c1 button,
+#middlebg #recommended #carousel #c2 button, 
+#middlebg #recommended #carousel #c3 button
+{
+    width: 88%;
+    padding: 10px;
+    margin-top: 20px;
+    border-radius: 3px;
+    color: rgb(255, 255, 255);
+    background-color: #912e54;
+    font-size: 20px;
+}
+#middlebg #recommended #carousel #c1 button:hover,
+#middlebg #recommended #carousel #c2 button:hover, 
+#middlebg #recommended #carousel #c3 button:hover
+{
+    
+    background-color: #bb6d8b;
+    border: 2px solid white;
+    color: yellow;
+}
+#middlebg #recommended #carousel #c1 .c1,
+#middlebg #recommended #carousel #c2 .c2,
+#middlebg #recommended #carousel #c3 .c3
+{
+    border-radius: 7px;
+    width: 50%;
+    height: 90%;
+    padding: 50px;
+    border: 2px solid rgba(255, 255, 255, 0.256);
+    background-color: #ffffff94;
+}
+
+#middlebg #recommended #carousel #c1 .c1 img,
+#middlebg #recommended #carousel #c2 .c2 img,
+#middlebg #recommended #carousel #c3 .c3 img{
+    width: 100%;
+}
+/*right carousel*/
+
+#rightbg
+{
+    box-shadow: 2px 2px 10px 10px rgb(205, 202, 202);
+    width: auto;
+    background-color: #65183b;
+    padding: 30px;
+}
+
+#rightbg #header
+{
+    /* margin-top: 20px; */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+#rightbg #header img{
+    width: 40px;
+    border-radius: 50px;
+}
+
+.profile
+{
+    border: 2px solid white;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /* padding: 20px; */
+    border-radius: 20px;
+}
+.profile a
+{
+    text-decoration: none;
+    color: white;
+    font-size: 15px;
+    margin-left: 10px;
+    /* border: 2px solid white; */
+    width: 100px;
+    padding: 5px;
+
+}
+
+#calendar-container
+{
+    margin-top: 200px;
+}
+
+#calendar-container h3,#calendar-container h2
+{
+    color: white;
+}
+#calendar-container h1
+{
+    color: #ffffff;
+    margin-top: 10px;
+    padding-top: 0;
+}
+  .calendar {
+    width: 300px;
+    margin: auto;
+    text-align: center;
+  }
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .calendar-header button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  .calendar-header button:hover {
+    background-color: #0056b3;
+  }
+  .calendar-header h3 {
+    margin: 0;
+  }
+  .days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    text-align: center;
+    margin-top: 10px;
+  }
+  .days div {
+    padding: 10px;
+    border-radius: 5px;
+  }
+  .days .today {
+    background-color: #007bff;
+    color: #fff;
+  }
+  .days .day {
+    cursor: pointer;
+    background-color: #f0f0f0;
+  }
+  .days .day:hover {
+    background-color: #d0d0d0;
+  }
+
+
+
+
+    </style>
+  </head>
+  <body>
+    <div id="background">
+      <div id="leftbg">
+                <div id="logo"><img src="../static/images/logow.svg" alt="">
+                  <h2>LEARNOVA</h2>
+                </div>
+        <div id="overview">
+          <h2>OVERVIEW</h2>
+          <div class="ovList"><a href="/teachersMain">Dashboard</a><a href="/studentsList">Add Student</a><a href="/studentsList">Add Teacher</a><a href="/admin">Stats</a></div>
+        </div>
+            <div id="final">
+              <div class="settings"><img src="../static/images/settingsw.png" alt="">
+                <h2>Settings</h2>
+              </div>
+              <div class="logout"><img src="../static/images/logout.png" alt="">
+                <h2>Log Out</h2>
+              </div>
+            </div>
+      </div>
+      <div id="middlebg">
+        <searchBar Search here... search-icon.svg></searchBar>
+            <div class="search-container">
+              <input class="search-input" type="text" placeholder="Search your course...">
+              <div class="search-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65">     </line>
+                </svg>
+              </div>
+            </div>
+        <div id="welcome">
+          <div id="image"> <img src="../static/images/wimage.png" alt=""></div>
+          <div id="text">
+            <h2>Welcome to the Admin Dashboard</h2>
+            <div class="revisit">
+              <h2>Check Student Stats</h2><a href="/admin">
+                <h1>View Stats </h1>
+                <button><img src="../static/images/arrow.png" alt=""></button></a>
+            </div>
+          </div>
+        </div>
+        <div id="recommended"> 
+          <!-- <h2>Try our AI Features:</h2> -->
+          <br><br><br>
+          <div id="carousel"> 
+            <div id="c1"> 
+              <div class="c1"> <img src="/static/images/student.png" alt=""></div>
+              <button onclick="window.location.href='/studentsList'">Add Student</button>
+            </div>
+            <div id="c2"> 
+              <div class="c2"> <img src="/static/images/teacher.png" alt=""></div>
+              <button onclick="window.location.href='/studentsList'">Add Teacher</button>
+            </div>
+            <div id="c3"> 
+              <div class="c3"> <img src="/static/images/stat.png" alt=""></div>
+              
+              <button onclick="window.location.href='/admin'">View Stats</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="rightbg">
+        <div id="header"><img src="/static/images/bell.png" alt="">
+              <div class="profile"><img src="/static/images/profile.png" alt=""><a href="/dashboard">Profile</a></div>
+        </div>
+        <div id="calendar-container"> 
+          <h3>EVENT SCHEDULER</h3>
+              <div id="calendar">
+                <div class="calendar">
+                  <div class="calendar-header">
+                    <button id="prev">←</button>
+                    <h3 id="month-year"></h3>
+                    <button id="next">→</button>
+                  </div>
+                  <div class="days" id="days-container">
+                    <!-- Days will be dynamically generated-->
+                  </div>
+                </div>
+              </div>
+          <h2>Today's Event </h2>
+          <h1>No Event Today</h1>
+        </div>
+      </div>
+    </div>
+    <script>
+const daysContainer = document.getElementById('days-container');
+    const monthYearLabel = document.getElementById('month-year');
+    const prevButton = document.getElementById('prev');
+    const nextButton = document.getElementById('next');
+
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    let currentDate = new Date();
+
+    function renderCalendar(date) {
+      daysContainer.innerHTML = ''; // Clear previous days
+      const year = date.getFullYear();
+      const month = date.getMonth();
+
+      monthYearLabel.textContent = `${months[month]} ${year}`;
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const lastDate = new Date(year, month + 1, 0).getDate();
+      const today = new Date();
+
+      // Add blank days for alignment
+      for (let i = 0; i < firstDay; i++) {
+        daysContainer.innerHTML += '<div></div>';
+      }
+
+      // Add actual days
+      for (let day = 1; day <= lastDate; day++) {
+        const isToday = 
+          day === today.getDate() &&
+          month === today.getMonth() &&
+          year === today.getFullYear();
+        daysContainer.innerHTML += `
+          <div class="${isToday ? 'today' : 'day'}">${day}</div>
+        `;
+      }
+    }
+
+    // Event Listeners for navigation
+    prevButton.addEventListener('click', () => {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      renderCalendar(currentDate);
+    });
+
+    nextButton.addEventListener('click', () => {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      renderCalendar(currentDate);
+    });
+
+    // Initialize calendar
+    renderCalendar(currentDate);
+
+
+    </script>
+    <!-- <script src="/js/express.js"></script> -->
+  </body>
+</html>

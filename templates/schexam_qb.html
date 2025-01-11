@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- <link rel="stylesheet" href="../static/styles.css" /> -->
+        <!-- <link rel="stylesheet" href="../static/index.css" /> -->
+        <link rel="stylesheet" href="../static/teacher.css" />
+        <link rel="stylesheet" href="../static/sdash.css" />
+        <title>Schedule Exam - Learnova</title>
+    </head>
+    <body>
+        <div id="leftbg">
+            <div id="logo">
+                <img src="/static/images/logow.svg" alt="" />
+                <h2>LEARNOVA</h2>
+            </div>
+            <div id="overview">
+                <h2>OVERVIEW</h2>
+                <div class="ovList">
+                    <a href="sdashboard.html">Dashboard</a
+                    ><a href="sdashboard.html">Exams</a
+                    ><a href="sdashboard.html">Courses</a>
+                    <a href="sdashboard.html">Statistics</a>
+                </div>
+            </div>
+            <div id="final">
+                <div class="settings">
+                    <img src="/static/images/settingsw.png" alt="" />
+                    <h2>Settings</h2>
+                </div>
+                <div class="logout">
+                    <img src="/static/images/logout.png" alt="" />
+                    <h2>Log Out</h2>
+                </div>
+            </div>
+        </div>
+        <div id="teachersAllContent">
+            <div id="teachersMainContent">
+                <div id="scheduleExam" class="content">
+                    <div
+                        id="scheduleExamModal"
+                        class="modal"
+                        style="display: block"
+                    >
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2>Schedule New Exam</h2>
+                                <!-- <span class="close">&times;</span> -->
+                            </div>
+                            <div class="modal-body">
+                                <div class="schedule-form">
+                                    <select id="examSubject">
+                                        <option value="">Select Subject</option>
+                                    </select>
+
+                                    <select id="examTitle">
+                                        <option value="">
+                                            Select Exam Title
+                                        </option>
+                                    </select>
+
+                                    <input type="date" id="examDate" />
+                                    <input type="time" id="examTime" />
+
+                                    <select id="examDuration">
+                                        <option value="">
+                                            Select Duration
+                                        </option>
+                                        <option value="30">30 minutes</option>
+                                        <option value="60">60 minutes</option>
+                                        <option value="90">90 minutes</option>
+                                        <option value="120">120 minutes</option>
+                                        <option value="180">180 minutes</option>
+                                    </select>
+
+                                    <button onclick="scheduleExam()">
+                                        Schedule Exam
+                                    </button>
+                                </div>
+
+                                <!-- Question Management Section (Initially Hidden) -->
+                                <div
+                                    id="questionManagement"
+                                    style="display: none"
+                                >
+                                    <h3>Manage Questions</h3>
+                                    <div class="question-form">
+                                        <textarea
+                                            id="questionText"
+                                            placeholder="Enter your question"
+                                        ></textarea>
+
+                                        <div class="choices">
+                                            <input
+                                                type="text"
+                                                id="choice1"
+                                                placeholder="Choice 1"
+                                            />
+                                            <input
+                                                type="text"
+                                                id="choice2"
+                                                placeholder="Choice 2"
+                                            />
+                                            <input
+                                                type="text"
+                                                id="choice3"
+                                                placeholder="Choice 3"
+                                            />
+                                            <input
+                                                type="text"
+                                                id="choice4"
+                                                placeholder="Choice 4"
+                                            />
+                                        </div>
+
+                                        <select id="correctAnswer">
+                                            <option value="">
+                                                Select Correct Answer
+                                            </option>
+                                            <option value="1">Choice 1</option>
+                                            <option value="2">Choice 2</option>
+                                            <option value="3">Choice 3</option>
+                                            <option value="4">Choice 4</option>
+                                        </select>
+
+                                        <button onclick="addQuestion()">
+                                            Add Question
+                                        </button>
+                                    </div>
+
+                                    <div
+                                        id="currentQuestions"
+                                        class="current-questions"
+                                    >
+                                        <h3>Current Questions</h3>
+                                        <div id="questionsList"></div>
+                                        <button
+                                            onclick="saveQuestions()"
+                                            class="save-button"
+                                        >
+                                            Save Question Set
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="toast" class="toast">
+            <p id="toast-message"></p>
+        </div>
+
+        <script>
+            let currentQuestions = [];
+            let questionSets = JSON.parse(
+                localStorage.getItem("questionSets") || "{}"
+            );
+            const subjects = [
+                "Mathematics",
+                "Physics",
+                "Chemistry",
+                "Biology",
+                "Computer Science",
+            ];
+            const examTitles = [
+                "Midterm",
+                "Final",
+                "Quiz 1",
+                "Quiz 2",
+                "Practice Test",
+            ];
+
+            function addQuestion() {
+                const question = {
+                    text: document.getElementById("questionText").value,
+                    choices: [
+                        document.getElementById("choice1").value,
+                        document.getElementById("choice2").value,
+                        document.getElementById("choice3").value,
+                        document.getElementById("choice4").value,
+                    ],
+                    correctAnswer:
+                        document.getElementById("correctAnswer").value,
+                };
+
+                if (
+                    !question.text ||
+                    !question.correctAnswer ||
+                    question.choices.some((choice) => !choice)
+                ) {
+                    showToast("Please fill in all fields");
+                    return;
+                }
+
+                currentQuestions.push(question);
+                clearQuestionForm();
+                updateQuestionsList();
+            }
+
+            function updateQuestionsList() {
+                const list = document.getElementById("questionsList");
+                list.innerHTML = currentQuestions
+                    .map(
+                        (q, idx) => `
+                    <div class="question-item">
+                        <p><strong>Q${idx + 1}:</strong> ${q.text}</p>
+                        <ol>
+                            ${q.choices
+                                .map(
+                                    (choice, i) => `
+                                <li class="${
+                                    parseInt(q.correctAnswer) === i + 1
+                                        ? "correct"
+                                        : ""
+                                }">${choice}</li>
+                            `
+                                )
+                                .join("")}
+                        </ol>
+                    </div>
+                `
+                    )
+                    .join("");
+            }
+
+            function showToast(message) {
+                const toast = document.getElementById("toast");
+                const toastMessage = document.getElementById("toast-message");
+                toastMessage.textContent = message;
+                toast.style.display = "block";
+
+                setTimeout(() => {
+                    toast.style.display = "none";
+                }, 3000);
+            }
+
+            function saveQuestions() {
+                const examName = document.getElementById("examTitle").value;
+                const subject = document.getElementById("examSubject").value;
+
+                if (!examName || !subject || currentQuestions.length === 0) {
+                    showToast(
+                        "Please fill all fields and add at least one question"
+                    );
+                    return;
+                }
+
+                const questionData = {
+                    examName: examName,
+                    subject: subject,
+                    questions: currentQuestions,
+                };
+
+                const blob = new Blob([JSON.stringify(questionData, null, 2)], {
+                    type: "application/json",
+                });
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(blob);
+                a.download = `${examName}_${subject}.json`;
+                a.click();
+                URL.revokeObjectURL(a.href);
+
+                showToast(
+                    "Questions saved successfully! Redirecting to main page..."
+                );
+
+                setTimeout(() => {
+                    window.location.href = "tdash.html";
+                }, 3000);
+            }
+
+            function clearQuestionForm() {
+                document.getElementById("questionText").value = "";
+                document.getElementById("choice1").value = "";
+                document.getElementById("choice2").value = "";
+                document.getElementById("choice3").value = "";
+                document.getElementById("choice4").value = "";
+                document.getElementById("correctAnswer").value = "";
+            }
+
+            function populateScheduleDropdowns() {
+                const subjectSelect = document.getElementById("examSubject");
+                const titleSelect = document.getElementById("examTitle");
+
+                subjectSelect.innerHTML =
+                    '<option value="">Select Subject</option>';
+                subjects.forEach((subject) => {
+                    subjectSelect.innerHTML += `<option value="${subject}">${subject}</option>`;
+                });
+
+                titleSelect.innerHTML =
+                    '<option value="">Select Exam Title</option>';
+                examTitles.forEach((title) => {
+                    titleSelect.innerHTML += `<option value="${title}">${title}</option>`;
+                });
+            }
+
+            function scheduleExam() {
+                const subject = document.getElementById("examSubject").value;
+                const title = document.getElementById("examTitle").value;
+                const date = document.getElementById("examDate").value;
+                const time = document.getElementById("examTime").value;
+                const duration = document.getElementById("examDuration").value;
+
+                if (!subject || !title || !date || !time || !duration) {
+                    showToast("Please fill all fields");
+                    return;
+                }
+
+                const examDetails = {
+                    subject,
+                    title,
+                    date,
+                    time,
+                    duration,
+                };
+                localStorage.setItem(
+                    "currentExam",
+                    JSON.stringify(examDetails)
+                );
+
+                showToast(
+                    "Exam scheduled successfully! You can now add questions."
+                );
+
+                document.getElementById("questionManagement").style.display =
+                    "block";
+            }
+
+            document.querySelectorAll(".close").forEach((close) => {
+                close.onclick = function () {
+                    this.closest(".modal").style.display = "none";
+                };
+            });
+
+            window.onclick = function (event) {
+                if (event.target.className === "modal") {
+                    event.target.style.display = "none";
+                }
+            };
+
+            // On page load, populate the schedule dropdowns
+            populateScheduleDropdowns();
+        </script>
+    </body>
+</html>

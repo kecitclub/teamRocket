@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom - Courses</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background-color: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo {
+            width: 32px;
+        }
+
+        .breadcrumb {
+            padding: 1rem 2rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #666;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #333;
+        }
+
+        .tabs {
+            padding: 0 2rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .tab-button {
+            padding: 1rem 0;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 1rem;
+            position: relative;
+        }
+
+        .tab-button.active {
+            color: #2e7d32;
+            font-weight: 500;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #2e7d32;
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .course-image {
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .course-image img{
+            width: 100%;
+            height: 125%;
+            object-fit: cover;
+        }
+
+        .course-content {
+            padding: 1.5rem;
+        }
+
+        .course-title {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .course-info {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .user-actions img {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+        .module-list {
+            display: none;
+            padding: 2rem;
+        }
+
+        .module-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .resources-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .resource-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .resource-item:hover {
+            background-color: #f0f0f0;
+            border-radius: 4px;
+        }
+
+        .back-button {
+            display: none;
+            margin-bottom: 1rem;
+            padding: 0.5rem 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .back-button:hover {
+            color: #333;
+        }
+        
+        #currentCourses, #previousCourses {
+            display: none;
+        }
+
+        #currentCourses.active, #previousCourses.active {
+            display: grid;
+        }
+
+        .module-list {
+            display: none;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo-section">
+            <a href="/dash_main"><img src="/static/images/logob.svg" alt="Logo" class="logo"></a>
+            <h1>Courses</h1>
+        </div>
+        <div class="user-actions">
+            <img src="/static/images/settingsb.png" alt="Settings">
+            <img src="/static/images/bell.png" alt="Notifications">
+            <img src="/static/images/profile.png" alt="Profile">
+        </div>
+    </nav>
+
+    <div class="breadcrumb">
+        <a href="/dash_main/">HOME</a> / <a>Courses</a>
+    </div>
+
+    <div class="tabs">
+        <div class="tab-buttons">
+            <button class="tab-button active" onclick="switchTab('current')">CURRENT COURSES</button>
+            <button class="tab-button" onclick="switchTab('previous')">PREVIOUS COURSES</button>
+        </div>
+    </div>
+
+    <div id="currentCourses" class="course-grid active">
+        <!-- Current courses grid -->
+    </div>
+
+    <div id="previousCourses" class="course-grid">
+        <!-- Previous courses grid -->
+    </div>
+
+    <div class="module-list" id="moduleList">
+        <!-- Modules will be dynamically added here -->
+    </div>
+
+    <button class="back-button" style="display: none;">← Back to Courses</button>
+
+    <script>
+        const currentCourses = [
+            {
+                id: 1,
+                title: "Artificial Intelligence",
+                instructor: "Dr. John Doe", 
+                semester: "Semester 3",
+                modules: [
+                    {
+                        title: "Introduction to AI/ML and Data Science",
+                        units: 1,
+                        resources: [
+                            { type: "pdf", name: "Introduction to AI", url: "#" },
+                            { type: "video", name: "AI Fundamentals", url: "https://www.youtube.com/watch?v=zUpVhnR5vdc" }
+                        ]
+                    },
+                    {
+                        title: "Data Wrangling",
+                        units: 2,
+                        resources: [
+                            { type: "pdf", name: "Data Cleaning Guide", url: "#" },
+                            { type: "video", name: "Data Preparation Tutorial", url: "https://www.youtube.com/watch?v=csbGkbkooeY" }
+                        ]
+                    }
+                ],
+                src : "/static/images/AI-course.jpg"
+            },
+            {
+                id: 2,
+                title: "Cyber Security",
+                instructor: "Dr. Jane Doe", 
+                semester: "Semester 3",
+                modules: [
+                    {
+                        title: "Introduction to Cyber Security",
+                        units: 1,
+                        resources: [
+                            { type: "pdf", name: "Introduction to Cybersecurity", url: "#" },
+                            { type: "video", name: "Cybersecurity Fundamentals", url: "https://www.youtube.com/watch?v=zUpVhnR5vdc" }
+                        ]
+                    },
+                    {
+                        title: "Fundamentals of Cyber Security",
+                        units: 2,
+                        resources: [
+                            { type: "pdf", name: "Cyber Security Guide", url: "#" },
+                            { type: "video", name: "Hands on with Cyber Security", url: "https://www.youtube.com/watch?v=csbGkbkooeY" }
+                        ]
+                    }
+                ],
+                src : "/static/images/Cyber-course.jpg"
+            }
+        ];
+
+        const previousCourses = [
+            {
+                id: 3,
+                title: "Introduction to Programming - Python",
+                instructor: "John Smith",
+                semester: "Semester 2, 2024",
+                modules: [
+                    {
+                        title: "Basic Python Syntax",
+                        units: 1,
+                        resources: [
+                            { type: "pdf", name: "Python Basics", url: "#" },
+                            { type: "video", name: "Python Tutorial", url: "#" }
+                        ]
+                    }
+                ],
+                src : "/static/images/python-course.jpg"
+            },
+            {
+                id: 4,
+                title: "Web Development Fundamentals",
+                instructor: "Jane Doe",
+                semester: "Semester 1, 2024",
+                modules: [
+                    {
+                        title: "HTML & CSS Basics",
+                        units: 1,
+                        resources: [
+                            { type: "pdf", name: "Web Dev Guide", url: "#" },
+                            { type: "video", name: "HTML Tutorial", url: "#" }
+                        ]
+                    }
+                ],
+                src : "/static/images/web-dev.jpg"
+            }
+        ];
+
+        function renderCourseGrid(courses, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = courses.map(course => `
+                <div class="course-card" onclick="showModules(${course.id}, '${containerId}')">
+                    <div class="course-image"><img src = ${course.src}></div>
+                    <div class="course-content">
+                        <h3 class="course-title">${course.title}</h3>
+                        <p class="course-info">Instructor: ${course.instructor}</p>
+                        <p class="course-info">${course.semester}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showModules(courseId, sourceContainerId) {
+            const courses = sourceContainerId === 'currentCourses' ? currentCourses : previousCourses;
+            const course = courses.find(c => c.id === courseId);
+            if (!course) return;
+
+            document.getElementById(sourceContainerId).style.display = 'none';
+            document.getElementById('moduleList').style.display = 'block';
+            document.querySelector('.back-button').style.display = 'block';
+
+            document.getElementById('moduleList').innerHTML = course.modules.map(module => `
+                <div class="module-card">
+                    <h3>${module.title}</h3>
+                    <p>Units: ${module.units}</p>
+                    <div class="resources-section">
+                        <h4>Resources:</h4>
+                        ${module.resources.map(resource => `
+                            <a href="${resource.url}" class="resource-item" target="_blank">
+                                ${resource.type === 'pdf' ? '📄' : '🎥'} ${resource.name}
+                            </a>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function switchTab(tab) {
+            document.getElementById('currentCourses').classList.remove('active');
+            document.getElementById('previousCourses').classList.remove('active');
+            document.getElementById(`${tab}Courses`).classList.add('active');
+            
+            document.getElementById('moduleList').style.display = 'none';
+            document.querySelector('.back-button').style.display = 'none';
+
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => button.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        document.querySelector('.back-button').addEventListener('click', () => {
+            document.getElementById('moduleList').style.display = 'none';
+            document.querySelector('.back-button').style.display = 'none';
+            
+            if (document.getElementById('currentCourses').classList.contains('active')) {
+                document.getElementById('currentCourses').style.display = 'grid';
+            } else {
+                document.getElementById('previousCourses').style.display = 'grid';
+            }
+        });
+
+        // Initial render
+        renderCourseGrid(currentCourses, 'currentCourses');
+        renderCourseGrid(previousCourses, 'previousCourses');
+        document.getElementById('currentCourses').classList.add('active');
+    </script>
+</body>
+</html>
